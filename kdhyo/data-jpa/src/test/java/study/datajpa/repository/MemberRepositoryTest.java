@@ -3,6 +3,8 @@ package study.datajpa.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,6 +28,9 @@ class MemberRepositoryTest {
 
 	@Autowired
 	TeamRepository teamRepository;
+
+	@PersistenceContext
+	EntityManager em;
 
 	@Test
 	void testMember() {
@@ -153,13 +158,71 @@ class MemberRepositoryTest {
 		// then
 		List<Member> content = page.getContent();
 		long totalElements = page.getTotalElements();
-		
+
 		assertThat(content).hasSize(3);
 		assertThat(totalElements).isEqualTo(5);
 		assertThat(page.getNumber()).isZero();
 		assertThat(page.getTotalPages()).isEqualTo(2);
 		assertThat(page.isFirst()).isTrue();
 		assertThat(page.hasNext()).isTrue();
+	}
+
+	@Test
+	void bulkUpdate() {
+		// given
+		memberRepository.save(new Member("member1", 10));
+		memberRepository.save(new Member("member2", 19));
+		memberRepository.save(new Member("member3", 20));
+		memberRepository.save(new Member("member4", 21));
+		memberRepository.save(new Member("member5", 40));
+
+		// when
+		int resultCount = memberRepository.bulkAgePlus(20);
+
+		// then
+		assertThat(resultCount).isEqualTo(3);
+	}
+
+	@Test
+	void findMemberLazy() {
+		// given
+		Team teamA = new Team("teamA");
+		Team teamB = new Team("teamB");
+		teamRepository.save(teamA);
+		teamRepository.save(teamB);
+
+		Member m1 = new Member("member1", 10, teamA);
+		Member m2 = new Member("member2", 10, teamB);
+		memberRepository.save(m1);
+		memberRepository.save(m2);
+
+		em.flush();
+		em.clear();
+
+		// when
+		List<Member> members = memberRepository.findMemberEntityGraph();
+
+		// then
+		for (Member member : members) {
+			System.out.println("member.username = " + member.getUsername());
+			System.out.println("member.teamName = " + member.getTeam().getName());
+		}
+	}
+
+	@Test
+	void queryHint() {
+	    // given
+		Member m1 = new Member("member1", 10);
+		memberRepository.save(m1);
+		em.flush();
+		em.clear();
+
+	    // when
+		Member findMember = memberRepository.findReadOnlyByUsername("member1");
+		findMember.setUsername("member2"); // readonly 활성화 상태여서 update query 이 발생되지 않음.
+
+		em.flush();
+		// then
 	}
 
 }
