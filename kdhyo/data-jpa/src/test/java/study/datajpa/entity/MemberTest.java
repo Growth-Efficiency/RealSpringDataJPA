@@ -39,8 +39,7 @@ class MemberTest {
 
 		// when
 
-		List<Member> members = em.createQuery("select m from Member m", Member.class)
-			.getResultList();
+		List<Member> members = em.createQuery("select m from Member m", Member.class).getResultList();
 
 		for (Member member : members) {
 			System.out.println("member = " + member);
