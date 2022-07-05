@@ -20,15 +20,14 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
 @Rollback
-class MemberRepostoryTest {
+class memberRepositoryTest {
 
     @Autowired
-    MemberRepostory memberRepostory;
+    MemberRepository memberRepository;
     @Autowired
     TeamRepository teamRepository;
 
@@ -38,9 +37,9 @@ class MemberRepostoryTest {
     @Test
     public void testMember() {
         Member member = new Member("membarA");
-        Member savedMember = memberRepostory.save(member);
+        Member savedMember = memberRepository.save(member);
 
-        Member findMember = memberRepostory.findById(savedMember.getId()).get();
+        Member findMember = memberRepository.findById(savedMember.getId()).get();
 
         Assertions.assertThat(findMember.getId()).isEqualTo(member.getId());
         Assertions.assertThat(findMember.getUsername()).isEqualTo(member.getUsername());
@@ -51,28 +50,28 @@ class MemberRepostoryTest {
     public void basicCRUD() {
         Member member1 = new Member("member1");
         Member member2 = new Member("member2");
-        memberRepostory.save(member1);
-        memberRepostory.save(member2);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
 
         //단건 조회 검증
-        Member findMember1 = memberRepostory.findById(member1.getId()).get();
-        Member findMember2 = memberRepostory.findById(member2.getId()).get();
+        Member findMember1 = memberRepository.findById(member1.getId()).get();
+        Member findMember2 = memberRepository.findById(member2.getId()).get();
         assertThat(findMember1).isEqualTo(member1);
         assertThat(findMember2).isEqualTo(member2);
 
         //리스트 조회 검증
-        List<Member> all = memberRepostory.findAll();
+        List<Member> all = memberRepository.findAll();
         assertThat(all.size()).isEqualTo(2);
 
         //카운트 검증
-        long count = memberRepostory.count();
+        long count = memberRepository.count();
         assertThat(count).isEqualTo(2);
 
         //삭제 검증
-        memberRepostory.delete(member1);
-        memberRepostory.delete(member2);
+        memberRepository.delete(member1);
+        memberRepository.delete(member2);
 
-        long deletedCount = memberRepostory.count();
+        long deletedCount = memberRepository.count();
         assertThat(deletedCount).isEqualTo(0);
     }
 
@@ -80,10 +79,10 @@ class MemberRepostoryTest {
     public void findByUsernameAndAgeGreaterThan() {
         Member m1 = new Member("AAA", 10);
         Member m2 = new Member("AAA", 20);
-        memberRepostory.save(m1);
-        memberRepostory.save(m2);
+        memberRepository.save(m1);
+        memberRepository.save(m2);
 
-        List<Member> result = memberRepostory.findByUsernameAndAgeGreaterThan("AAA", 15);
+        List<Member> result = memberRepository.findByUsernameAndAgeGreaterThan("AAA", 15);
 
         assertThat(result.get(0).getUsername()).isEqualTo("AAA");
         assertThat(result.get(0).getAge()).isEqualTo(20);
@@ -92,17 +91,17 @@ class MemberRepostoryTest {
 
     @Test
     public void findHelloBy() {
-        List<Member> helloBy = memberRepostory.findTop3HelloBy();
+        List<Member> helloBy = memberRepository.findTop3HelloBy();
     }
 
     @Test
     public void testNamedQuery() {
         Member m1 = new Member("AAA", 10);
         Member m2 = new Member("BBB", 20);
-        memberRepostory.save(m1);
-        memberRepostory.save(m2);
+        memberRepository.save(m1);
+        memberRepository.save(m2);
 
-        List<Member> result = memberRepostory.findByUsername("AAA");
+        List<Member> result = memberRepository.findByUsername("AAA");
 
         assertThat(result.get(0).getUsername()).isEqualTo("AAA");
         assertThat(result.get(0).getAge()).isEqualTo(10);
@@ -113,10 +112,10 @@ class MemberRepostoryTest {
     public void testQuery() {
         Member m1 = new Member("AAA", 10);
         Member m2 = new Member("BBB", 20);
-        memberRepostory.save(m1);
-        memberRepostory.save(m2);
+        memberRepository.save(m1);
+        memberRepository.save(m2);
 
-        List<Member> result = memberRepostory.findUser("AAA", 10);
+        List<Member> result = memberRepository.findUser("AAA", 10);
 
         assertThat(result.get(0)).isEqualTo(m1);
     }
@@ -125,10 +124,10 @@ class MemberRepostoryTest {
     public void findUserNameList() {
         Member m1 = new Member("AAA", 10);
         Member m2 = new Member("BBB", 20);
-        memberRepostory.save(m1);
-        memberRepostory.save(m2);
+        memberRepository.save(m1);
+        memberRepository.save(m2);
 
-        List<String> usernameList = memberRepostory.findUsernameList();
+        List<String> usernameList = memberRepository.findUsernameList();
 
         for (String s : usernameList) {
             System.out.println("s = " + s);
@@ -142,9 +141,9 @@ class MemberRepostoryTest {
 
         Member m1 = new Member("AAA", 10);
         m1.setTeam(team);
-        memberRepostory.save(m1);
+        memberRepository.save(m1);
 
-        List<MemberDto> memberDto = memberRepostory.findMemberDto();
+        List<MemberDto> memberDto = memberRepository.findMemberDto();
 
         for (MemberDto dto : memberDto) {
             System.out.println("dto = " + dto);
@@ -155,10 +154,10 @@ class MemberRepostoryTest {
     public void findByNames() {
         Member m1 = new Member("AAA", 10);
         Member m2 = new Member("BBB", 20);
-        memberRepostory.save(m1);
-        memberRepostory.save(m2);
+        memberRepository.save(m1);
+        memberRepository.save(m2);
 
-        List<Member> result = memberRepostory.findByNames(Arrays.asList("AAA", "BBB"));
+        List<Member> result = memberRepository.findByNames(Arrays.asList("AAA", "BBB"));
         for (Member member : result) {
             System.out.println("member = " + member);
         }
@@ -168,10 +167,10 @@ class MemberRepostoryTest {
     public void returnType() {
         Member m1 = new Member("AAA", 10);
         Member m2 = new Member("BBB", 20);
-        memberRepostory.save(m1);
-        memberRepostory.save(m2);
+        memberRepository.save(m1);
+        memberRepository.save(m2);
 
-        Optional<Member> findMember = memberRepostory.findOptionalByUsername("AAA");
+        Optional<Member> findMember = memberRepository.findOptionalByUsername("AAA");
         System.out.println("findMember = " + findMember);
     }
 
@@ -179,16 +178,16 @@ class MemberRepostoryTest {
     @Test
     public void page() throws Exception {
         //given
-        memberRepostory.save(new Member("member1", 10));
-        memberRepostory.save(new Member("member2", 10));
-        memberRepostory.save(new Member("member3", 10));
-        memberRepostory.save(new Member("member4", 10));
-        memberRepostory.save(new Member("member5", 10));
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 10));
+        memberRepository.save(new Member("member3", 10));
+        memberRepository.save(new Member("member4", 10));
+        memberRepository.save(new Member("member5", 10));
 
         //when
         PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "username"));
 
-        Page<Member> page = memberRepostory.findByAge(10, pageRequest);
+        Page<Member> page = memberRepository.findByAge(10, pageRequest);
         Page<MemberDto> dtoPage = page.map(m -> new MemberDto(m.getId(), m.getUsername(), null));
 
         //then
@@ -204,22 +203,72 @@ class MemberRepostoryTest {
     @Test
     public void bulkUpdate() throws Exception {
         //given
-        memberRepostory.save(new Member("member1", 10));
-        memberRepostory.save(new Member("member2", 19));
-        memberRepostory.save(new Member("member3", 20));
-        memberRepostory.save(new Member("member4", 21));
-        memberRepostory.save(new Member("member5", 40));
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 19));
+        memberRepository.save(new Member("member3", 20));
+        memberRepository.save(new Member("member4", 21));
+        memberRepository.save(new Member("member5", 40));
 
         //when
-        int resultCount = memberRepostory.bulkAgePlus(20);
+        int resultCount = memberRepository.bulkAgePlus(20);
 //        em.flush();
 //        em.clear(); Bulk 연산 실행후엔 영속성 컨텍스트를 초기화 해주는게 좋다.
 
-        List<Member> result = memberRepostory.findByUsername("member5");
+        List<Member> result = memberRepository.findByUsername("member5");
         Member member5 = result.get(0);
         System.out.println("member5 = " + member5);
 
         //then
         assertThat(resultCount).isEqualTo(3);
+    }
+
+    @Test
+    public void findMemberLazy() throws Exception {
+        //given
+        //member1 -> teamA
+        //member2 -> teamB
+
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        memberRepository.save(new Member("member1", 10, teamA));
+        memberRepository.save(new Member("member2", 20, teamB));
+        em.flush();
+        em.clear();
+
+        //when
+        List<Member> members = memberRepository.findEntityGraphByUsername("member1");
+
+        //then
+        for (Member member : members) {
+            member.getTeam().getName();
+        }
+    }
+
+    @Test
+    public void queryHint() throws Exception {
+        //given
+        memberRepository.save(new Member("member1", 10));
+        em.flush();
+        em.clear();
+
+        //when
+        Member member = memberRepository.findReadOnlyByUsername("member1");
+        member.setUsername("member2");
+
+        em.flush(); //Update Query 실행X
+    }
+
+    @Test
+    public void lock() {
+        Member member1 = new Member("member1", 10);
+        memberRepository.save(member1);
+        em.flush();
+        em.clear();
+
+        //when
+        List<Member> result = memberRepository.findLockByUsername("memner1");
     }
 }
